@@ -1,0 +1,151 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Staircase Identification",
+        "description": "Choose a name for this staircase instance.",
+        "data": {
+          "name": "Staircase name"
+        }
+      },
+      "entities": {
+        "title": "Entity Selection",
+        "description": "Select the motion sensors and lights for this staircase.",
+        "data": {
+          "sensor_bottom": "Bottom motion sensor",
+          "sensor_top": "Top motion sensor",
+          "light_bottom": "Bottom light",
+          "light_top": "Top light",
+          "lux_sensor": "Ambient light sensor (optional)"
+        }
+      },
+      "parameters": {
+        "title": "Parameters",
+        "description": "Configure operational parameters for this staircase.",
+        "data": {
+          "turn_off_delay": "Turn-off delay",
+          "brightness": "Normal brightness",
+          "brightness_dim": "Dim brightness",
+          "lux_threshold": "Lux threshold",
+          "lux_control_enabled": "Enable lux-based control"
+        }
+      },
+      "dim_mode": {
+        "title": "Dim Mode",
+        "description": "Choose how reduced brightness mode is activated.",
+        "data": {
+          "dim_mode": "Dim mode"
+        }
+      },
+      "dim_time": {
+        "title": "Dim Time Range",
+        "description": "Set the time range for reduced brightness. Midnight-spanning ranges are supported (e.g. 23:00 to 07:00).",
+        "data": {
+          "dim_start": "Start time",
+          "dim_end": "End time"
+        }
+      },
+      "dim_entity": {
+        "title": "Dim External Entity",
+        "description": "Select an entity that activates reduced brightness when ON.",
+        "data": {
+          "dim_entity": "Dim control entity"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Entity Selection",
+        "description": "Update the motion sensors and lights for this staircase.",
+        "data": {
+          "sensor_bottom": "Bottom motion sensor",
+          "sensor_top": "Top motion sensor",
+          "light_bottom": "Bottom light",
+          "light_top": "Top light",
+          "lux_sensor": "Ambient light sensor (optional)"
+        }
+      },
+      "parameters": {
+        "title": "Parameters",
+        "description": "Update operational parameters.",
+        "data": {
+          "turn_off_delay": "Turn-off delay",
+          "brightness": "Normal brightness",
+          "brightness_dim": "Dim brightness",
+          "lux_threshold": "Lux threshold",
+          "lux_control_enabled": "Enable lux-based control"
+        }
+      },
+      "dim_mode": {
+        "title": "Dim Mode",
+        "description": "Choose how reduced brightness mode is activated.",
+        "data": {
+          "dim_mode": "Dim mode"
+        }
+      },
+      "dim_time": {
+        "title": "Dim Time Range",
+        "description": "Set the time range for reduced brightness.",
+        "data": {
+          "dim_start": "Start time",
+          "dim_end": "End time"
+        }
+      },
+      "dim_entity": {
+        "title": "Dim External Entity",
+        "description": "Select an entity that activates reduced brightness when ON.",
+        "data": {
+          "dim_entity": "Dim control entity"
+        }
+      }
+    }
+  },
+  "selector": {
+    "dim_mode": {
+      "options": {
+        "none": "Disabled",
+        "time_range": "Time range",
+        "external_entity": "External entity"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "staircase_state": {
+        "name": "State",
+        "state": {
+          "idle": "Idle",
+          "active": "Active"
+        }
+      },
+      "staircase_mode": {
+        "name": "Mode",
+        "state": {
+          "normal": "Normal",
+          "dim": "Dim"
+        }
+      }
+    },
+    "number": {
+      "turn_off_delay": {
+        "name": "Turn-off delay"
+      },
+      "brightness": {
+        "name": "Brightness"
+      },
+      "brightness_dim": {
+        "name": "Dim brightness"
+      },
+      "lux_threshold": {
+        "name": "Lux threshold"
+      }
+    },
+    "switch": {
+      "lux_control": {
+        "name": "Lux control"
+      }
+    }
+  }
+}

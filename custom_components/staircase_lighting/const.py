@@ -1,0 +1,51 @@
+"""Constants for the Staircase Lighting integration.
+
+Spec ref: Config Flow fields, entity defaults, domain identifier.
+"""
+
+DOMAIN = "staircase_lighting"
+
+# --- Config Flow keys ---
+# Step 1: Instance identification
+CONF_NAME = "name"
+
+# Step 2: Entity selection
+CONF_SENSOR_BOTTOM = "sensor_bottom"
+CONF_SENSOR_TOP = "sensor_top"
+CONF_LIGHT_BOTTOM = "light_bottom"
+CONF_LIGHT_TOP = "light_top"
+CONF_LUX_SENSOR = "lux_sensor"
+
+# Step 3: Parameters
+CONF_TURN_OFF_DELAY = "turn_off_delay"
+CONF_BRIGHTNESS = "brightness"
+CONF_BRIGHTNESS_DIM = "brightness_dim"
+CONF_LUX_THRESHOLD = "lux_threshold"
+CONF_LUX_CONTROL_ENABLED = "lux_control_enabled"
+
+# Step 4: Dim mode
+CONF_DIM_MODE = "dim_mode"
+CONF_DIM_START = "dim_start"
+CONF_DIM_END = "dim_end"
+CONF_DIM_ENTITY = "dim_entity"
+
+# --- Dim mode options ---
+DIM_MODE_NONE = "none"
+DIM_MODE_TIME_RANGE = "time_range"
+DIM_MODE_EXTERNAL_ENTITY = "external_entity"
+
+# --- Defaults (spec ref: Parameters table) ---
+DEFAULT_TURN_OFF_DELAY = 60
+DEFAULT_BRIGHTNESS = 100
+DEFAULT_BRIGHTNESS_DIM = 20
+DEFAULT_LUX_THRESHOLD = 50
+DEFAULT_LUX_CONTROL_ENABLED = True
+
+# --- State values (spec ref: sensor state/mode values) ---
+STATE_IDLE = "idle"
+STATE_ACTIVE = "active"
+MODE_NORMAL = "normal"
+MODE_DIM = "dim"
+
+# --- Platforms ---
+PLATFORMS = ["sensor", "number", "switch"]

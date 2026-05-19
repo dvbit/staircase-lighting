@@ -1,0 +1,151 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Identificazione scala",
+        "description": "Scegli un nome per questa istanza della scala.",
+        "data": {
+          "name": "Nome della scala"
+        }
+      },
+      "entities": {
+        "title": "Selezione entità",
+        "description": "Seleziona i sensori di movimento e le luci per questa scala.",
+        "data": {
+          "sensor_bottom": "Sensore di movimento zona basso",
+          "sensor_top": "Sensore di movimento zona alto",
+          "light_bottom": "Luce zona basso",
+          "light_top": "Luce zona alto",
+          "lux_sensor": "Sensore di luminosità ambientale (opzionale)"
+        }
+      },
+      "parameters": {
+        "title": "Parametri",
+        "description": "Configura i parametri operativi per questa scala.",
+        "data": {
+          "turn_off_delay": "Ritardo spegnimento",
+          "brightness": "Luminosità normale",
+          "brightness_dim": "Luminosità ridotta",
+          "lux_threshold": "Soglia lux",
+          "lux_control_enabled": "Abilita controllo basato su lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Modalità ridotta",
+        "description": "Scegli come attivare la modalità a luminosità ridotta.",
+        "data": {
+          "dim_mode": "Modalità ridotta"
+        }
+      },
+      "dim_time": {
+        "title": "Fascia oraria ridotta",
+        "description": "Imposta la fascia oraria per la luminosità ridotta. Supporta fasce a cavallo della mezzanotte (es. 23:00–07:00).",
+        "data": {
+          "dim_start": "Ora di inizio",
+          "dim_end": "Ora di fine"
+        }
+      },
+      "dim_entity": {
+        "title": "Entità esterna ridotta",
+        "description": "Seleziona un'entità che attiva la luminosità ridotta quando è ON.",
+        "data": {
+          "dim_entity": "Entità di controllo ridotta"
+        }
+      }
+    }
+  },
+  "selector": {
+    "dim_mode": {
+      "options": {
+        "none": "Disabilitata",
+        "time_range": "Fascia oraria",
+        "external_entity": "Entità esterna"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "staircase_state": {
+        "name": "Stato",
+        "state": {
+          "idle": "Inattivo",
+          "active": "Attivo"
+        }
+      },
+      "staircase_mode": {
+        "name": "Modalità",
+        "state": {
+          "normal": "Normale",
+          "dim": "Ridotta"
+        }
+      }
+    },
+    "number": {
+      "turn_off_delay": {
+        "name": "Ritardo spegnimento"
+      },
+      "brightness": {
+        "name": "Luminosità"
+      },
+      "brightness_dim": {
+        "name": "Luminosità ridotta"
+      },
+      "lux_threshold": {
+        "name": "Soglia lux"
+      }
+    },
+    "switch": {
+      "lux_control": {
+        "name": "Controllo lux"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Selezione entità",
+        "description": "Seleziona i sensori di movimento e le luci per questa scala.",
+        "data": {
+          "sensor_bottom": "Sensore di movimento zona basso",
+          "sensor_top": "Sensore di movimento zona alto",
+          "light_bottom": "Luce zona basso",
+          "light_top": "Luce zona alto",
+          "lux_sensor": "Sensore di luminosità ambientale (opzionale)"
+        }
+      },
+      "parameters": {
+        "title": "Parametri",
+        "description": "Configura i parametri operativi per questa scala.",
+        "data": {
+          "turn_off_delay": "Ritardo spegnimento",
+          "brightness": "Luminosità normale",
+          "brightness_dim": "Luminosità ridotta",
+          "lux_threshold": "Soglia lux",
+          "lux_control_enabled": "Abilita controllo basato su lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Modalità ridotta",
+        "description": "Scegli come attivare la modalità a luminosità ridotta.",
+        "data": {
+          "dim_mode": "Modalità ridotta"
+        }
+      },
+      "dim_time": {
+        "title": "Fascia oraria ridotta",
+        "description": "Imposta la fascia oraria per la luminosità ridotta. Supporta fasce a cavallo della mezzanotte (es. 23:00–07:00).",
+        "data": {
+          "dim_start": "Ora di inizio",
+          "dim_end": "Ora di fine"
+        }
+      },
+      "dim_entity": {
+        "title": "Entità esterna ridotta",
+        "description": "Seleziona un'entità che attiva la luminosità ridotta quando è ON.",
+        "data": {
+          "dim_entity": "Entità di controllo ridotta"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Identificación de la escalera",
+        "description": "Elige un nombre para esta instancia de escalera.",
+        "data": {
+          "name": "Nombre de la escalera"
+        }
+      },
+      "entities": {
+        "title": "Selección de entidades",
+        "description": "Selecciona los sensores de movimiento y las luces para esta escalera.",
+        "data": {
+          "sensor_bottom": "Sensor de movimiento zona baja",
+          "sensor_top": "Sensor de movimiento zona alta",
+          "light_bottom": "Luz zona baja",
+          "light_top": "Luz zona alta",
+          "lux_sensor": "Sensor de luminosidad ambiental (opcional)"
+        }
+      },
+      "parameters": {
+        "title": "Parámetros",
+        "description": "Configura los parámetros operativos para esta escalera.",
+        "data": {
+          "turn_off_delay": "Retardo de apagado",
+          "brightness": "Brillo normal",
+          "brightness_dim": "Brillo reducido",
+          "lux_threshold": "Umbral lux",
+          "lux_control_enabled": "Activar control basado en lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Modo reducido",
+        "description": "Elige cómo activar el modo de brillo reducido.",
+        "data": {
+          "dim_mode": "Modo reducido"
+        }
+      },
+      "dim_time": {
+        "title": "Franja horaria reducida",
+        "description": "Configura la franja horaria para el brillo reducido. Se admiten franjas que cruzan la medianoche (ej. 23:00–07:00).",
+        "data": {
+          "dim_start": "Hora de inicio",
+          "dim_end": "Hora de fin"
+        }
+      },
+      "dim_entity": {
+        "title": "Entidad externa reducida",
+        "description": "Selecciona una entidad que active el brillo reducido cuando esté encendida.",
+        "data": {
+          "dim_entity": "Entidad de control reducida"
+        }
+      }
+    }
+  },
+  "selector": {
+    "dim_mode": {
+      "options": {
+        "none": "Desactivado",
+        "time_range": "Franja horaria",
+        "external_entity": "Entidad externa"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "staircase_state": {
+        "name": "Estado",
+        "state": {
+          "idle": "Inactivo",
+          "active": "Activo"
+        }
+      },
+      "staircase_mode": {
+        "name": "Modo",
+        "state": {
+          "normal": "Normal",
+          "dim": "Reducido"
+        }
+      }
+    },
+    "number": {
+      "turn_off_delay": {
+        "name": "Retardo de apagado"
+      },
+      "brightness": {
+        "name": "Brillo"
+      },
+      "brightness_dim": {
+        "name": "Brillo reducido"
+      },
+      "lux_threshold": {
+        "name": "Umbral lux"
+      }
+    },
+    "switch": {
+      "lux_control": {
+        "name": "Control lux"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Selección de entidades",
+        "description": "Selecciona los sensores de movimiento y las luces para esta escalera.",
+        "data": {
+          "sensor_bottom": "Sensor de movimiento zona baja",
+          "sensor_top": "Sensor de movimiento zona alta",
+          "light_bottom": "Luz zona baja",
+          "light_top": "Luz zona alta",
+          "lux_sensor": "Sensor de luminosidad ambiental (opcional)"
+        }
+      },
+      "parameters": {
+        "title": "Parámetros",
+        "description": "Configura los parámetros operativos para esta escalera.",
+        "data": {
+          "turn_off_delay": "Retardo de apagado",
+          "brightness": "Brillo normal",
+          "brightness_dim": "Brillo reducido",
+          "lux_threshold": "Umbral lux",
+          "lux_control_enabled": "Activar control basado en lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Modo reducido",
+        "description": "Elige cómo activar el modo de brillo reducido.",
+        "data": {
+          "dim_mode": "Modo reducido"
+        }
+      },
+      "dim_time": {
+        "title": "Franja horaria reducida",
+        "description": "Configura la franja horaria para el brillo reducido. Se admiten franjas que cruzan la medianoche (ej. 23:00–07:00).",
+        "data": {
+          "dim_start": "Hora de inicio",
+          "dim_end": "Hora de fin"
+        }
+      },
+      "dim_entity": {
+        "title": "Entidad externa reducida",
+        "description": "Selecciona una entidad que active el brillo reducido cuando esté encendida.",
+        "data": {
+          "dim_entity": "Entidad de control reducida"
+        }
+      }
+    }
+  }
+}

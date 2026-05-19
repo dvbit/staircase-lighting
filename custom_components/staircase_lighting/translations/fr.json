@@ -1,0 +1,151 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Identification de l'escalier",
+        "description": "Choisissez un nom pour cette instance d'escalier.",
+        "data": {
+          "name": "Nom de l'escalier"
+        }
+      },
+      "entities": {
+        "title": "Sélection des entités",
+        "description": "Sélectionnez les capteurs de mouvement et les lumières pour cet escalier.",
+        "data": {
+          "sensor_bottom": "Capteur de mouvement zone basse",
+          "sensor_top": "Capteur de mouvement zone haute",
+          "light_bottom": "Lumière zone basse",
+          "light_top": "Lumière zone haute",
+          "lux_sensor": "Capteur de luminosité ambiante (optionnel)"
+        }
+      },
+      "parameters": {
+        "title": "Paramètres",
+        "description": "Configurez les paramètres opérationnels pour cet escalier.",
+        "data": {
+          "turn_off_delay": "Délai d'extinction",
+          "brightness": "Luminosité normale",
+          "brightness_dim": "Luminosité réduite",
+          "lux_threshold": "Seuil lux",
+          "lux_control_enabled": "Activer le contrôle basé sur les lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Mode réduit",
+        "description": "Choisissez comment activer le mode luminosité réduite.",
+        "data": {
+          "dim_mode": "Mode réduit"
+        }
+      },
+      "dim_time": {
+        "title": "Plage horaire réduite",
+        "description": "Définissez la plage horaire pour la luminosité réduite. Les plages chevauchant minuit sont prises en charge (ex. 23:00–07:00).",
+        "data": {
+          "dim_start": "Heure de début",
+          "dim_end": "Heure de fin"
+        }
+      },
+      "dim_entity": {
+        "title": "Entité externe réduite",
+        "description": "Sélectionnez une entité qui active la luminosité réduite lorsqu'elle est activée.",
+        "data": {
+          "dim_entity": "Entité de contrôle réduite"
+        }
+      }
+    }
+  },
+  "selector": {
+    "dim_mode": {
+      "options": {
+        "none": "Désactivé",
+        "time_range": "Plage horaire",
+        "external_entity": "Entité externe"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "staircase_state": {
+        "name": "État",
+        "state": {
+          "idle": "Inactif",
+          "active": "Actif"
+        }
+      },
+      "staircase_mode": {
+        "name": "Mode",
+        "state": {
+          "normal": "Normal",
+          "dim": "Réduit"
+        }
+      }
+    },
+    "number": {
+      "turn_off_delay": {
+        "name": "Délai d'extinction"
+      },
+      "brightness": {
+        "name": "Luminosité"
+      },
+      "brightness_dim": {
+        "name": "Luminosité réduite"
+      },
+      "lux_threshold": {
+        "name": "Seuil lux"
+      }
+    },
+    "switch": {
+      "lux_control": {
+        "name": "Contrôle lux"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Sélection des entités",
+        "description": "Sélectionnez les capteurs de mouvement et les lumières pour cet escalier.",
+        "data": {
+          "sensor_bottom": "Capteur de mouvement zone basse",
+          "sensor_top": "Capteur de mouvement zone haute",
+          "light_bottom": "Lumière zone basse",
+          "light_top": "Lumière zone haute",
+          "lux_sensor": "Capteur de luminosité ambiante (optionnel)"
+        }
+      },
+      "parameters": {
+        "title": "Paramètres",
+        "description": "Configurez les paramètres opérationnels pour cet escalier.",
+        "data": {
+          "turn_off_delay": "Délai d'extinction",
+          "brightness": "Luminosité normale",
+          "brightness_dim": "Luminosité réduite",
+          "lux_threshold": "Seuil lux",
+          "lux_control_enabled": "Activer le contrôle basé sur les lux"
+        }
+      },
+      "dim_mode": {
+        "title": "Mode réduit",
+        "description": "Choisissez comment activer le mode luminosité réduite.",
+        "data": {
+          "dim_mode": "Mode réduit"
+        }
+      },
+      "dim_time": {
+        "title": "Plage horaire réduite",
+        "description": "Définissez la plage horaire pour la luminosité réduite. Les plages chevauchant minuit sont prises en charge (ex. 23:00–07:00).",
+        "data": {
+          "dim_start": "Heure de début",
+          "dim_end": "Heure de fin"
+        }
+      },
+      "dim_entity": {
+        "title": "Entité externe réduite",
+        "description": "Sélectionnez une entité qui active la luminosité réduite lorsqu'elle est activée.",
+        "data": {
+          "dim_entity": "Entité de contrôle réduite"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Treppenidentifikation",
+        "description": "Wählen Sie einen Namen für diese Treppeninstanz.",
+        "data": {
+          "name": "Treppenname"
+        }
+      },
+      "entities": {
+        "title": "Entitätsauswahl",
+        "description": "Wählen Sie die Bewegungssensoren und Lichter für diese Treppe.",
+        "data": {
+          "sensor_bottom": "Bewegungssensor untere Zone",
+          "sensor_top": "Bewegungssensor obere Zone",
+          "light_bottom": "Licht untere Zone",
+          "light_top": "Licht obere Zone",
+          "lux_sensor": "Umgebungslichtsensor (optional)"
+        }
+      },
+      "parameters": {
+        "title": "Parameter",
+        "description": "Konfigurieren Sie die Betriebsparameter für diese Treppe.",
+        "data": {
+          "turn_off_delay": "Ausschaltverzögerung",
+          "brightness": "Normale Helligkeit",
+          "brightness_dim": "Reduzierte Helligkeit",
+          "lux_threshold": "Lux-Schwellenwert",
+          "lux_control_enabled": "Lux-basierte Steuerung aktivieren"
+        }
+      },
+      "dim_mode": {
+        "title": "Reduzierter Modus",
+        "description": "Wählen Sie, wie der reduzierte Helligkeitsmodus aktiviert wird.",
+        "data": {
+          "dim_mode": "Reduzierter Modus"
+        }
+      },
+      "dim_time": {
+        "title": "Reduzierter Zeitraum",
+        "description": "Legen Sie den Zeitraum für reduzierte Helligkeit fest. Mitternachtsübergreifende Zeiträume werden unterstützt (z.B. 23:00–07:00).",
+        "data": {
+          "dim_start": "Startzeit",
+          "dim_end": "Endzeit"
+        }
+      },
+      "dim_entity": {
+        "title": "Externe reduzierte Entität",
+        "description": "Wählen Sie eine Entität, die die reduzierte Helligkeit aktiviert, wenn sie eingeschaltet ist.",
+        "data": {
+          "dim_entity": "Steuerungsentität für reduzierten Modus"
+        }
+      }
+    }
+  },
+  "selector": {
+    "dim_mode": {
+      "options": {
+        "none": "Deaktiviert",
+        "time_range": "Zeitraum",
+        "external_entity": "Externe Entität"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "staircase_state": {
+        "name": "Status",
+        "state": {
+          "idle": "Inaktiv",
+          "active": "Aktiv"
+        }
+      },
+      "staircase_mode": {
+        "name": "Modus",
+        "state": {
+          "normal": "Normal",
+          "dim": "Reduziert"
+        }
+      }
+    },
+    "number": {
+      "turn_off_delay": {
+        "name": "Ausschaltverzögerung"
+      },
+      "brightness": {
+        "name": "Helligkeit"
+      },
+      "brightness_dim": {
+        "name": "Reduzierte Helligkeit"
+      },
+      "lux_threshold": {
+        "name": "Lux-Schwellenwert"
+      }
+    },
+    "switch": {
+      "lux_control": {
+        "name": "Lux-Steuerung"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "entities": {
+        "title": "Entitätsauswahl",
+        "description": "Wählen Sie die Bewegungssensoren und Lichter für diese Treppe.",
+        "data": {
+          "sensor_bottom": "Bewegungssensor untere Zone",
+          "sensor_top": "Bewegungssensor obere Zone",
+          "light_bottom": "Licht untere Zone",
+          "light_top": "Licht obere Zone",
+          "lux_sensor": "Umgebungslichtsensor (optional)"
+        }
+      },
+      "parameters": {
+        "title": "Parameter",
+        "description": "Konfigurieren Sie die Betriebsparameter für diese Treppe.",
+        "data": {
+          "turn_off_delay": "Ausschaltverzögerung",
+          "brightness": "Normale Helligkeit",
+          "brightness_dim": "Reduzierte Helligkeit",
+          "lux_threshold": "Lux-Schwellenwert",
+          "lux_control_enabled": "Lux-basierte Steuerung aktivieren"
+        }
+      },
+      "dim_mode": {
+        "title": "Reduzierter Modus",
+        "description": "Wählen Sie, wie der reduzierte Helligkeitsmodus aktiviert wird.",
+        "data": {
+          "dim_mode": "Reduzierter Modus"
+        }
+      },
+      "dim_time": {
+        "title": "Reduzierter Zeitraum",
+        "description": "Legen Sie den Zeitraum für reduzierte Helligkeit fest. Mitternachtsübergreifende Zeiträume werden unterstützt (z.B. 23:00–07:00).",
+        "data": {
+          "dim_start": "Startzeit",
+          "dim_end": "Endzeit"
+        }
+      },
+      "dim_entity": {
+        "title": "Externe reduzierte Entität",
+        "description": "Wählen Sie eine Entität, die die reduzierte Helligkeit aktiviert, wenn sie eingeschaltet ist.",
+        "data": {
+          "dim_entity": "Steuerungsentität für reduzierten Modus"
+        }
+      }
+    }
+  }
+}
