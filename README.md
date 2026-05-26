@@ -73,13 +73,19 @@ For each configured staircase (example name: "Hall Stairs"):
 
 | Entity | Type | Description |
 |---|---|---|
+| `binary_sensor.hall_stairs_motion_bottom` | binary_sensor | Real-time bottom motion sensor state |
+| `binary_sensor.hall_stairs_motion_top` | binary_sensor | Real-time top motion sensor state |
 | `sensor.hall_stairs_state` | sensor | `idle` or `active` |
 | `sensor.hall_stairs_mode` | sensor | `normal` or `dim` |
+| `sensor.hall_stairs_time_remaining` | sensor | Seconds until lights turn off (0 when idle) |
+| `sensor.hall_stairs_current_brightness` | sensor | Current brightness % from the light entity |
+| `sensor.hall_stairs_ambient_lux` | sensor | Real-time ambient lux (only if lux sensor configured) |
 | `number.hall_stairs_turn_off_delay` | number | Runtime delay (slider) |
 | `number.hall_stairs_brightness` | number | Runtime normal brightness |
 | `number.hall_stairs_brightness_dim` | number | Runtime dim brightness |
 | `number.hall_stairs_lux_threshold` | number | Runtime lux threshold |
 | `switch.hall_stairs_lux_control` | switch | Enable/disable lux gating |
+| `button.hall_stairs_set_lux_threshold` | button | Set lux threshold to current ambient value |
 
 ## Usage Examples
 
@@ -120,8 +126,12 @@ This integration was built from the following consolidated requirement:
 - Dim mode: mutually exclusive — none / time_range / external_entity
 - Single time range per instance, midnight-spanning supported
 - Lux gating with fail-safe (missing/unavailable sensor = allow)
-- Zone timers via `async_call_later`, spegnimento only when both expired
+- Zone timers via `async_call_later`, turn off only when both expired
 - Bidirectional number/switch entities — immediate effect at next cycle
+- Mirrored binary sensors (motion bottom/top) and lux sensor on virtual device
+- Time remaining countdown sensor (1s update interval)
+- Current brightness sensor (reads real brightness attribute from light entity)
+- Button to set lux threshold to current ambient lux value
 - Options flow mirrors config flow steps 2-4, no restart required
 - Full instance isolation
 - Minimum compatibility: Home Assistant 2024.1

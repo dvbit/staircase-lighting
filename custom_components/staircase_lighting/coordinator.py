@@ -8,12 +8,16 @@ Each instance is fully isolated (timers, state, parameters).
 from __future__ import annotations
 
 import logging
-from datetime import datetime, time
+from datetime import datetime, time as dt_time, timedelta
+from time import monotonic
 from typing import Any
 
 from homeassistant.const import STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import HomeAssistant, Event, callback, CALLBACK_TYPE
-from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.event import (
+    async_track_state_change_event,
+    async_track_time_interval,
+)
 from homeassistant.helpers import event as evt
 
 from .const import (
@@ -96,6 +100,21 @@ class StaircaseLightingCoordinator:
         self._listeners: list[CALLBACK_TYPE] = []
         self._update_callbacks: list[callback] = []
 
+        # --- Timer expiry timestamps (monotonic) for countdown calculation ---
+        self._expiry_bottom: float | None = None
+        self._expiry_top: float | None = None
+
+        # --- 1-second countdown interval handle ---
+        self._countdown_unsub: CALLBACK_TYPE | None = None
+
+        # --- Current brightness applied (0 when lights off) ---
+        self._current_brightness_pct: int = 0
+
+        # --- Mirrored sensor states (real-time via state change listeners) ---
+        self._motion_bottom: bool = False
+        self._motion_top: bool = False
+        self._lux_value: float | None = None
+
     # ------------------------------------------------------------------
     # State properties (spec ref: Entità esposte — sensor state/mode)
     # ------------------------------------------------------------------
@@ -109,6 +128,53 @@ class StaircaseLightingCoordinator:
     def mode(self) -> str:
         """Current brightness mode: normal or dim."""
         return self._mode
+
+    @property
+    def motion_bottom(self) -> bool:
+        """Mirrored state of the bottom motion sensor."""
+        return self._motion_bottom
+
+    @property
+    def motion_top(self) -> bool:
+        """Mirrored state of the top motion sensor."""
+        return self._motion_top
+
+    @property
+    def lux_value(self) -> float | None:
+        """Mirrored value of the ambient lux sensor (None if unconfigured)."""
+        return self._lux_value
+
+    @property
+    def time_remaining(self) -> int:
+        """Seconds remaining until lights turn off.
+
+        Returns the maximum of the two zone timers (both must expire
+        before lights turn off). Returns 0 when idle.
+        """
+        if self._state == STATE_IDLE:
+            return 0
+        now = monotonic()
+        remaining_bottom = max(0, self._expiry_bottom - now) if self._expiry_bottom else 0
+        remaining_top = max(0, self._expiry_top - now) if self._expiry_top else 0
+        return int(max(remaining_bottom, remaining_top))
+
+    @property
+    def current_brightness(self) -> int:
+        """Current brightness percentage applied to the lights.
+
+        Reads the brightness attribute from the bottom light entity.
+        Returns 0 when lights are off. HA brightness is 0-255, converted to %.
+        """
+        state = self.hass.states.get(self.light_bottom)
+        if state is None or state.state != STATE_ON:
+            return 0
+        brightness = state.attributes.get("brightness")
+        if brightness is None:
+            return 0
+        try:
+            return round(int(brightness) * 100 / 255)
+        except (ValueError, TypeError):
+            return 0
 
     # ------------------------------------------------------------------
     # Callback registration for entity updates
@@ -139,6 +205,8 @@ class StaircaseLightingCoordinator:
         """Start listening to sensor state changes.
 
         Spec ref: uses async_track_state_change_event for sensor monitoring.
+        Also tracks motion, lux, and light sensors for real-time mirrored entities.
+        Starts a 1-second interval for countdown updates.
         """
         self._listeners.append(
             async_track_state_change_event(
@@ -154,10 +222,48 @@ class StaircaseLightingCoordinator:
                 self._async_on_sensor_top,
             )
         )
+
+        # --- Lux sensor listener for real-time mirroring ---
+        if self.lux_sensor:
+            self._listeners.append(
+                async_track_state_change_event(
+                    self.hass,
+                    self.lux_sensor,
+                    self._async_on_lux_changed,
+                )
+            )
+
+        # --- Light state listeners for real-time brightness mirroring ---
+        self._listeners.append(
+            async_track_state_change_event(
+                self.hass,
+                self.light_bottom,
+                self._async_on_light_changed,
+            )
+        )
+        self._listeners.append(
+            async_track_state_change_event(
+                self.hass,
+                self.light_top,
+                self._async_on_light_changed,
+            )
+        )
+
+        # --- 1-second countdown interval for time_remaining sensor ---
+        self._countdown_unsub = async_track_time_interval(
+            self.hass,
+            self._async_countdown_tick,
+            timedelta(seconds=1),
+        )
+
+        # --- Read initial states for mirrored entities ---
+        self._sync_initial_states()
+
         _LOGGER.debug(
-            "Coordinator started: bottom=%s, top=%s",
+            "Coordinator started: bottom=%s, top=%s, lux=%s",
             self.sensor_bottom,
             self.sensor_top,
+            self.lux_sensor,
         )
 
     async def async_stop(self) -> None:
@@ -169,6 +275,11 @@ class StaircaseLightingCoordinator:
             unsub()
         self._listeners.clear()
 
+        # Cancel countdown interval
+        if self._countdown_unsub is not None:
+            self._countdown_unsub()
+            self._countdown_unsub = None
+
         if self._timer_bottom is not None:
             self._timer_bottom()
             self._timer_bottom = None
@@ -176,7 +287,43 @@ class StaircaseLightingCoordinator:
             self._timer_top()
             self._timer_top = None
 
+        self._expiry_bottom = None
+        self._expiry_top = None
+
         _LOGGER.debug("Coordinator stopped, timers cancelled")
+
+    # ------------------------------------------------------------------
+    # Initial state sync for mirrored entities
+    # ------------------------------------------------------------------
+
+    @callback
+    def _sync_initial_states(self) -> None:
+        """Read current states of motion and lux sensors at startup.
+
+        Ensures mirrored entities reflect the correct state immediately
+        after coordinator start, before any state_change events fire.
+        """
+        bottom = self.hass.states.get(self.sensor_bottom)
+        self._motion_bottom = (
+            bottom is not None and bottom.state == STATE_ON
+        )
+
+        top = self.hass.states.get(self.sensor_top)
+        self._motion_top = (
+            top is not None and top.state == STATE_ON
+        )
+
+        if self.lux_sensor:
+            lux = self.hass.states.get(self.lux_sensor)
+            if lux is not None and lux.state not in (
+                STATE_UNAVAILABLE, STATE_UNKNOWN
+            ):
+                try:
+                    self._lux_value = float(lux.state)
+                except (ValueError, TypeError):
+                    self._lux_value = None
+            else:
+                self._lux_value = None
 
     # ------------------------------------------------------------------
     # Sensor event handlers
@@ -187,9 +334,18 @@ class StaircaseLightingCoordinator:
         """Handle bottom sensor state change.
 
         Spec ref: Attivazione sensore — when sensor passes to 'on'.
+        Also updates mirrored motion state in real-time.
         """
         new_state = event.data.get("new_state")
-        if new_state is None or new_state.state != STATE_ON:
+        if new_state is None:
+            return
+
+        # --- Update mirrored state for binary_sensor entity ---
+        self._motion_bottom = new_state.state == STATE_ON
+        self._async_notify_update()
+
+        # --- Trigger activation logic only on 'on' transition ---
+        if new_state.state != STATE_ON:
             return
         self._async_handle_activation("bottom")
 
@@ -198,11 +354,55 @@ class StaircaseLightingCoordinator:
         """Handle top sensor state change.
 
         Spec ref: Attivazione sensore — when sensor passes to 'on'.
+        Also updates mirrored motion state in real-time.
         """
         new_state = event.data.get("new_state")
-        if new_state is None or new_state.state != STATE_ON:
+        if new_state is None:
+            return
+
+        # --- Update mirrored state for binary_sensor entity ---
+        self._motion_top = new_state.state == STATE_ON
+        self._async_notify_update()
+
+        # --- Trigger activation logic only on 'on' transition ---
+        if new_state.state != STATE_ON:
             return
         self._async_handle_activation("top")
+
+    @callback
+    def _async_on_lux_changed(self, event: Event) -> None:
+        """Handle lux sensor state change for real-time mirroring.
+
+        Updates the mirrored lux value displayed by the sensor entity.
+        """
+        new_state = event.data.get("new_state")
+        if new_state is None:
+            self._lux_value = None
+        elif new_state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+            self._lux_value = None
+        else:
+            try:
+                self._lux_value = float(new_state.state)
+            except (ValueError, TypeError):
+                self._lux_value = None
+        self._async_notify_update()
+
+    @callback
+    def _async_on_light_changed(self, event: Event) -> None:
+        """Handle light entity state change for real-time brightness mirroring.
+
+        Notifies entities so current_brightness property is re-read.
+        """
+        self._async_notify_update()
+
+    @callback
+    def _async_countdown_tick(self, _now: Any) -> None:
+        """1-second interval tick to update time_remaining sensor.
+
+        Only notifies when active (timers running) to avoid unnecessary updates.
+        """
+        if self._state == STATE_ACTIVE:
+            self._async_notify_update()
 
     # ------------------------------------------------------------------
     # Core activation logic
@@ -244,12 +444,14 @@ class StaircaseLightingCoordinator:
             self._timer_bottom = evt.async_call_later(
                 self.hass, delay, self._async_timer_bottom_expired
             )
+            self._expiry_bottom = monotonic() + delay
         else:
             if self._timer_top is not None:
                 self._timer_top()
             self._timer_top = evt.async_call_later(
                 self.hass, delay, self._async_timer_top_expired
             )
+            self._expiry_top = monotonic() + delay
 
         # --- Update state ---
         self._state = STATE_ACTIVE
@@ -324,8 +526,8 @@ class StaircaseLightingCoordinator:
         """
         now = datetime.now().time()
         try:
-            start = time.fromisoformat(self.dim_start)
-            end = time.fromisoformat(self.dim_end)
+            start = dt_time.fromisoformat(self.dim_start)
+            end = dt_time.fromisoformat(self.dim_end)
         except (ValueError, TypeError):
             _LOGGER.warning(
                 "Invalid dim time range: %s–%s, defaulting to normal",
@@ -385,6 +587,7 @@ class StaircaseLightingCoordinator:
         Spec ref: Scadenza timer di zona — turn off only when BOTH expired.
         """
         self._timer_bottom = None
+        self._expiry_bottom = None
         self._async_check_all_timers_expired()
 
     @callback
@@ -394,6 +597,7 @@ class StaircaseLightingCoordinator:
         Spec ref: Scadenza timer di zona — turn off only when BOTH expired.
         """
         self._timer_top = None
+        self._expiry_top = None
         self._async_check_all_timers_expired()
 
     @callback
@@ -406,6 +610,31 @@ class StaircaseLightingCoordinator:
         if self._timer_bottom is None and self._timer_top is None:
             self._state = STATE_IDLE
             self._mode = MODE_NORMAL
+            self._current_brightness_pct = 0
             self.hass.async_create_task(self._async_turn_off_lights())
             self._async_notify_update()
             _LOGGER.debug("Both timers expired, lights off, state=idle")
+    # ------------------------------------------------------------------
+    # Button action: set lux threshold to current lux value
+    # ------------------------------------------------------------------
+
+    @callback
+    def set_lux_threshold_to_current(self) -> bool:
+        """Set lux_threshold to the current ambient lux reading.
+
+        Returns True if successful, False if sensor is unavailable.
+        Used by the set_lux_threshold button entity.
+        """
+        if self._lux_value is not None:
+            self.lux_threshold = int(self._lux_value)
+            self._async_notify_update()
+            _LOGGER.info(
+                "Lux threshold set to current value: %d lx",
+                self.lux_threshold,
+            )
+            return True
+
+        _LOGGER.warning(
+            "Cannot set lux threshold: lux sensor unavailable or not configured"
+        )
+        return False

@@ -48,4 +48,4 @@ MODE_NORMAL = "normal"
 MODE_DIM = "dim"
 
 # --- Platforms ---
-PLATFORMS = ["sensor", "number", "switch"]
+PLATFORMS = ["binary_sensor", "button", "sensor", "number", "switch"]

@@ -73,13 +73,19 @@ Per ogni scala configurata (esempio: "Scala Ingresso"):
 
 | Entità | Tipo | Descrizione |
 |---|---|---|
+| `binary_sensor.scala_ingresso_motion_bottom` | binary_sensor | Stato sensore movimento basso in tempo reale |
+| `binary_sensor.scala_ingresso_motion_top` | binary_sensor | Stato sensore movimento alto in tempo reale |
 | `sensor.scala_ingresso_state` | sensor | `idle` o `active` |
 | `sensor.scala_ingresso_mode` | sensor | `normal` o `dim` |
+| `sensor.scala_ingresso_time_remaining` | sensor | Secondi rimanenti allo spegnimento (0 quando inattivo) |
+| `sensor.scala_ingresso_current_brightness` | sensor | Luminosità attuale % dall'entità luce |
+| `sensor.scala_ingresso_ambient_lux` | sensor | Lux ambientale in tempo reale (solo se sensore lux configurato) |
 | `number.scala_ingresso_turn_off_delay` | number | Ritardo runtime (slider) |
 | `number.scala_ingresso_brightness` | number | Luminosità normale runtime |
 | `number.scala_ingresso_brightness_dim` | number | Luminosità ridotta runtime |
 | `number.scala_ingresso_lux_threshold` | number | Soglia lux runtime |
 | `switch.scala_ingresso_lux_control` | switch | Abilita/disabilita controllo lux |
+| `button.scala_ingresso_set_lux_threshold` | button | Imposta soglia lux al valore ambientale attuale |
 
 ## Esempi di utilizzo
 
@@ -122,6 +128,10 @@ Questa integrazione è stata costruita dal seguente requisito consolidato:
 - Controllo lux con fail-safe (sensore assente/non disponibile = permetti)
 - Timer a zona via `async_call_later`, spegnimento solo quando entrambi scaduti
 - Entità number/switch bidirezionali — effetto immediato al prossimo ciclo
+- Sensori di movimento (bottom/top) e lux specchiati nel device virtuale in tempo reale
+- Sensore countdown tempo rimanente (aggiornamento ogni 1s)
+- Sensore luminosità attuale (legge attributo brightness reale dall'entità light)
+- Pulsante per impostare la soglia lux al valore ambientale corrente
 - Options flow replica step 2-4 del config flow, senza riavvio
 - Isolamento completo delle istanze
 - Compatibilità minima: Home Assistant 2024.1

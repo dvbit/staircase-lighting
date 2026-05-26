@@ -78,6 +78,15 @@
           "normal": "Normal",
           "dim": "Reducido"
         }
+      },
+      "ambient_lux": {
+        "name": "Luminosidad ambiental"
+      },
+      "time_remaining": {
+        "name": "Tiempo restante"
+      },
+      "current_brightness": {
+        "name": "Brillo actual"
       }
     },
     "number": {
@@ -97,6 +106,19 @@
     "switch": {
       "lux_control": {
         "name": "Control lux"
+      }
+    },
+    "binary_sensor": {
+      "motion_bottom": {
+        "name": "Movimiento zona baja"
+      },
+      "motion_top": {
+        "name": "Movimiento zona alta"
+      }
+    },
+    "button": {
+      "set_lux_threshold": {
+        "name": "Establecer umbral lux"
       }
     }
   },

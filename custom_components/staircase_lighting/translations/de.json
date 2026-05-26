@@ -78,6 +78,15 @@
           "normal": "Normal",
           "dim": "Reduziert"
         }
+      },
+      "ambient_lux": {
+        "name": "Umgebungshelligkeit"
+      },
+      "time_remaining": {
+        "name": "Verbleibende Zeit"
+      },
+      "current_brightness": {
+        "name": "Aktuelle Helligkeit"
       }
     },
     "number": {
@@ -97,6 +106,19 @@
     "switch": {
       "lux_control": {
         "name": "Lux-Steuerung"
+      }
+    },
+    "binary_sensor": {
+      "motion_bottom": {
+        "name": "Bewegung untere Zone"
+      },
+      "motion_top": {
+        "name": "Bewegung obere Zone"
+      }
+    },
+    "button": {
+      "set_lux_threshold": {
+        "name": "Lux-Schwellenwert setzen"
       }
     }
   },

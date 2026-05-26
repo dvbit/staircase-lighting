@@ -126,6 +126,15 @@
           "normal": "Normal",
           "dim": "Dim"
         }
+      },
+      "ambient_lux": {
+        "name": "Ambient lux"
+      },
+      "time_remaining": {
+        "name": "Time remaining"
+      },
+      "current_brightness": {
+        "name": "Current brightness"
       }
     },
     "number": {
@@ -145,6 +154,19 @@
     "switch": {
       "lux_control": {
         "name": "Lux control"
+      }
+    },
+    "binary_sensor": {
+      "motion_bottom": {
+        "name": "Motion bottom"
+      },
+      "motion_top": {
+        "name": "Motion top"
+      }
+    },
+    "button": {
+      "set_lux_threshold": {
+        "name": "Set lux threshold"
       }
     }
   }
