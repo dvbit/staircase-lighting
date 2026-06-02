@@ -85,6 +85,7 @@ Per ogni scala configurata (esempio: "Scala Ingresso"):
 | `number.scala_ingresso_brightness_dim` | number | Luminosità ridotta runtime |
 | `number.scala_ingresso_lux_threshold` | number | Soglia lux runtime |
 | `switch.scala_ingresso_lux_control` | switch | Abilita/disabilita controllo lux |
+| `switch.scala_ingresso_lights` | switch | Accensione/spegnimento manuale di entrambe le luci |
 | `button.scala_ingresso_set_lux_threshold` | button | Imposta soglia lux al valore ambientale attuale |
 
 ## Esempi di utilizzo

@@ -110,6 +110,9 @@ class StaircaseLightingCoordinator:
         # --- Current brightness applied (0 when lights off) ---
         self._current_brightness_pct: int = 0
 
+        # --- Manual on flag (set by lights switch, cleared on timer expiry) ---
+        self._manual_on: bool = False
+
         # --- Mirrored sensor states (real-time via state change listeners) ---
         self._motion_bottom: bool = False
         self._motion_top: bool = False
@@ -611,6 +614,7 @@ class StaircaseLightingCoordinator:
             self._state = STATE_IDLE
             self._mode = MODE_NORMAL
             self._current_brightness_pct = 0
+            self._manual_on = False
             self.hass.async_create_task(self._async_turn_off_lights())
             self._async_notify_update()
             _LOGGER.debug("Both timers expired, lights off, state=idle")
@@ -638,3 +642,56 @@ class StaircaseLightingCoordinator:
             "Cannot set lux threshold: lux sensor unavailable or not configured"
         )
         return False
+    # ------------------------------------------------------------------
+    # Manual light control (switch entity)
+    # ------------------------------------------------------------------
+
+    @property
+    def lights_on(self) -> bool:
+        """Whether the staircase lights are currently on.
+
+        True if either automatic (timers active) or manually turned on.
+        """
+        return self._state == STATE_ACTIVE or self._manual_on
+
+    async def async_manual_turn_on(self) -> None:
+        """Manually turn on both lights at the current mode brightness.
+
+        Determines dim/normal mode at the moment of activation.
+        Does not start zone timers — lights stay on until manually turned off
+        or a sensor-triggered timer cycle completes.
+        """
+        current_mode = self._determine_mode()
+        self._mode = current_mode
+        brightness_pct = (
+            self.brightness_dim if self._mode == MODE_DIM else self.brightness
+        )
+        await self._async_turn_on_lights(brightness_pct)
+        self._manual_on = True
+        self._async_notify_update()
+        _LOGGER.debug(
+            "Manual ON: mode=%s, brightness=%d%%", self._mode, brightness_pct
+        )
+
+    async def async_manual_turn_off(self) -> None:
+        """Manually turn off both lights and cancel any active timers.
+
+        Resets state to idle and clears all timer/manual flags.
+        """
+        # Cancel active timers
+        if self._timer_bottom is not None:
+            self._timer_bottom()
+            self._timer_bottom = None
+            self._expiry_bottom = None
+        if self._timer_top is not None:
+            self._timer_top()
+            self._timer_top = None
+            self._expiry_top = None
+
+        await self._async_turn_off_lights()
+        self._state = STATE_IDLE
+        self._mode = MODE_NORMAL
+        self._manual_on = False
+        self._current_brightness_pct = 0
+        self._async_notify_update()
+        _LOGGER.debug("Manual OFF: timers cancelled, state=idle")

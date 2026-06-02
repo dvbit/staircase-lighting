@@ -85,6 +85,7 @@ For each configured staircase (example name: "Hall Stairs"):
 | `number.hall_stairs_brightness_dim` | number | Runtime dim brightness |
 | `number.hall_stairs_lux_threshold` | number | Runtime lux threshold |
 | `switch.hall_stairs_lux_control` | switch | Enable/disable lux gating |
+| `switch.hall_stairs_lights` | switch | Manual on/off for both lights |
 | `button.hall_stairs_set_lux_threshold` | button | Set lux threshold to current ambient value |
 
 ## Usage Examples

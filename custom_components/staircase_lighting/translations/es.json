@@ -106,6 +106,9 @@
     "switch": {
       "lux_control": {
         "name": "Control lux"
+      },
+      "lights": {
+        "name": "Luces"
       }
     },
     "binary_sensor": {
