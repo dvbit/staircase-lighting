@@ -125,9 +125,7 @@ A custom card is included for visual monitoring and configuration.
 
 ### Card Installation
 
-1. Copy `custom_components/staircase_lighting/www/staircase-lighting-card.js` to `/config/www/`
-2. Go to **Settings → Dashboards → Resources** (three-dot menu top right)
-3. Add resource: `/local/staircase-lighting-card.js` — Type: **JavaScript Module**
+The card is **automatically installed** when the integration is set up — no manual file copy or resource registration needed. The integration registers the JS file as a static path and adds it to Lovelace resources on first load.
 
 ### Card Configuration
 
