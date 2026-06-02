@@ -121,11 +121,14 @@ La modalità viene fissata all'accensione e non cambia durante il ciclo.
 
 ## Card Lovelace Custom
 
-Una card custom è inclusa per il monitoraggio visivo e la configurazione.
+Una card custom è disponibile in un repository separato: [staircase-lighting-card](https://github.com/dvbit/staircase-lighting-card)
 
-### Installazione Card
+### Installazione Card (HACS)
 
-La card viene **installata automaticamente** quando l'integrazione viene configurata — nessuna copia manuale di file o registrazione di risorse necessaria. L'integrazione registra il file JS come path statico e lo aggiunge alle risorse Lovelace al primo caricamento.
+1. Apri HACS → Frontend → menu tre puntini → Repository personalizzati
+2. Aggiungi `https://github.com/dvbit/staircase-lighting-card` come **Dashboard**
+3. Cerca "Staircase Lighting Card" e installa
+4. Aggiorna il browser (Ctrl+F5)
 
 ### Configurazione Card
 
