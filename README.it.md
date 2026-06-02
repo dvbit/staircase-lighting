@@ -119,6 +119,43 @@ Crea un helper `input_boolean.modalita_notte`. Imposta la modalità ridotta su "
 
 La modalità viene fissata all'accensione e non cambia durante il ciclo.
 
+## Card Lovelace Custom
+
+Una card custom è inclusa per il monitoraggio visivo e la configurazione.
+
+### Installazione Card
+
+1. Copia `custom_components/staircase_lighting/www/staircase-lighting-card.js` in `/config/www/`
+2. Vai su **Impostazioni → Dashboard → Risorse** (menu tre puntini in alto a destra)
+3. Aggiungi risorsa: `/local/staircase-lighting-card.js` — Tipo: **Modulo JavaScript**
+
+### Configurazione Card
+
+```yaml
+type: custom:staircase-lighting-card
+name: scala_piano_1    # nome dispositivo slugificato (come appare negli entity ID)
+icon: mdi:stairs       # opzionale, default: mdi:stairs
+```
+
+### Layout Card
+
+- **Alto**: barra progresso tempo rimanente allo spegnimento (verde → giallo → rosso). Nascosta quando inattivo.
+- **Centro**: icona grande della scala — **gialla** quando luci accese, **grigia** quando spente. **Tap** per accendere/spegnere.
+- **Sotto il centro**: modalità corrente (Normale/Ridotta) e percentuale luminosità.
+- **Basso-sinistra**: icone sensori movimento (▼ basso, ▲ alto) — colorate quando rilevano movimento. **Tap** per dettaglio entità.
+- **Basso-centro**: icona lux + valore — opaca sotto soglia, luminosa se sufficiente. **Tap** per dettaglio entità.
+- **Basso-destra**: ingranaggio impostazioni — **tap** per aprire popup configurazione.
+
+### Popup Impostazioni
+
+Il popup permette la regolazione in tempo reale di tutti i parametri:
+- Ritardo spegnimento (slider)
+- Luminosità normale (slider)
+- Luminosità ridotta (slider)
+- Soglia lux (slider)
+- Controllo lux (on/off)
+- Pulsante "Imposta soglia al lux attuale"
+
 ## Specifica
 
 Questa integrazione è stata costruita dal seguente requisito consolidato:

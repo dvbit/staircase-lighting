@@ -119,6 +119,43 @@ Create an `input_boolean.night_mode` helper. Set dim mode to "External entity" a
 
 Mode is locked at activation and does not change mid-cycle.
 
+## Custom Lovelace Card
+
+A custom card is included for visual monitoring and configuration.
+
+### Card Installation
+
+1. Copy `custom_components/staircase_lighting/www/staircase-lighting-card.js` to `/config/www/`
+2. Go to **Settings → Dashboards → Resources** (three-dot menu top right)
+3. Add resource: `/local/staircase-lighting-card.js` — Type: **JavaScript Module**
+
+### Card Configuration
+
+```yaml
+type: custom:staircase-lighting-card
+name: hall_stairs       # slugified device name (as it appears in entity IDs)
+icon: mdi:stairs        # optional, default: mdi:stairs
+```
+
+### Card Layout
+
+- **Top**: progress bar showing time remaining until lights off (green → yellow → red). Hidden when idle.
+- **Center**: large staircase icon — **yellow** when lights on, **gray** when off. **Tap** to toggle lights on/off.
+- **Below center**: current mode (Normal/Dim) and brightness percentage.
+- **Bottom-left**: motion sensor icons (▼ bottom, ▲ top) — colored when motion detected. **Tap** to open entity detail.
+- **Bottom-center**: lux icon + value — opaque when below threshold, bright when sufficient. **Tap** to open entity detail.
+- **Bottom-right**: settings gear — **tap** to open configuration popup.
+
+### Settings Popup
+
+The popup provides real-time adjustment of all operational parameters:
+- Turn-off delay (slider)
+- Normal brightness (slider)
+- Dim brightness (slider)
+- Lux threshold (slider)
+- Lux control toggle (on/off)
+- "Set threshold to current lux" button
+
 ## Specification
 
 This integration was built from the following consolidated requirement:
