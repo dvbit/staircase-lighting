@@ -28,38 +28,21 @@ CARD_URL = f"/{DOMAIN}/{CARD_JS}"
 CARD_DIR = Path(__file__).parent / "www"
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the Staircase Lighting component.
-
-    Registers the www/ directory as a static path so the custom card JS
-    is served by HA at /staircase_lighting/staircase-lighting-card.js.
-    """
-    hass.data.setdefault(DOMAIN, {})
-
-    # Register static path for the card JS file
-    await hass.http.async_register_static_paths(
-        [StaticPathConfig(CARD_URL, str(CARD_DIR / CARD_JS), cache_headers=False)]
-    )
-    _LOGGER.debug("Registered static path: %s -> %s", CARD_URL, CARD_DIR / CARD_JS)
-
-    return True
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Staircase Lighting from a config entry.
 
     Spec ref: creates coordinator, stores in hass.data, forwards platforms.
-    Also auto-registers the custom Lovelace card resource (once).
+    Also auto-registers the custom Lovelace card (once per HA session).
     """
     hass.data.setdefault(DOMAIN, {})
+
+    # --- Auto-install card (once per HA session) ---
+    await _async_register_card(hass)
 
     coordinator = StaircaseLightingCoordinator(hass, entry.data)
     await coordinator.async_start()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
-
-    # Auto-register the card as a Lovelace resource (once per HA session)
-    await _async_register_card_resource(hass)
 
     # Listen for options flow updates to reload coordinator parameters
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
@@ -97,23 +80,42 @@ async def _async_update_listener(
     await hass.config_entries.async_reload(entry.entry_id)
 
 
-async def _async_register_card_resource(hass: HomeAssistant) -> None:
-    """Register the custom card as a Lovelace frontend resource.
+async def _async_register_card(hass: HomeAssistant) -> None:
+    """Register the custom card static path and Lovelace resource.
 
-    Only registers once per HA session. The resource URL points to the
-    static path served by async_setup. Uses the lovelace resources
-    collection so the user doesn't need to add the resource manually.
+    Performs both steps in async_setup_entry (not async_setup) to ensure
+    hass.http is available. Runs only once per HA session via guard flag.
     """
-    # Skip if already registered this session
     if hass.data[DOMAIN].get("card_registered"):
         return
 
+    # Mark as registered immediately to avoid duplicate attempts
+    hass.data[DOMAIN]["card_registered"] = True
+
+    # --- Step 1: Register static path ---
+    card_path = str(CARD_DIR / CARD_JS)
     try:
-        # Access the lovelace resources collection
+        hass.http.register_static_path(CARD_URL, card_path, cache_headers=False)
+        _LOGGER.debug("Registered static path: %s -> %s", CARD_URL, card_path)
+    except Exception:
+        try:
+            await hass.http.async_register_static_paths(
+                [StaticPathConfig(CARD_URL, card_path, cache_headers=False)]
+            )
+            _LOGGER.debug(
+                "Registered static path (async): %s -> %s", CARD_URL, card_path
+            )
+        except Exception as err:
+            _LOGGER.warning(
+                "Could not register static path for card: %s", err
+            )
+            return
+
+    # --- Step 2: Register Lovelace resource ---
+    try:
         resources = hass.data.get("lovelace_resources")
 
         if resources is not None:
-            # Check if already registered in persistent storage
             existing = [
                 r
                 for r in resources.async_items()
@@ -125,22 +127,20 @@ async def _async_register_card_resource(hass: HomeAssistant) -> None:
                     {"res_type": "module", "url": CARD_URL}
                 )
                 _LOGGER.info(
-                    "Auto-registered Lovelace resource: %s (module)", CARD_URL
+                    "Auto-registered Lovelace resource: %s", CARD_URL
                 )
             else:
                 _LOGGER.debug("Card resource already registered")
         else:
             _LOGGER.warning(
                 "Lovelace resources not available — "
-                "add manually: %s as JavaScript Module",
+                "add resource manually: %s as JavaScript Module",
                 CARD_URL,
             )
-
-    except Exception:
+    except Exception as err:
         _LOGGER.warning(
-            "Could not auto-register card resource — "
+            "Could not auto-register card resource: %s — "
             "add manually: %s as JavaScript Module",
+            err,
             CARD_URL,
         )
-
-    hass.data[DOMAIN]["card_registered"] = True
