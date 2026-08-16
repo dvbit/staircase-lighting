@@ -35,6 +35,7 @@ async def async_setup_entry(
         StaircaseModeSensor(coordinator, entry, name),
         TimeRemainingSensor(coordinator, entry, name),
         CurrentBrightnessSensor(coordinator, entry, name),
+        DirectionSensor(coordinator, entry, name),
     ]
 
     if entry.data.get(CONF_LUX_SENSOR):
@@ -154,3 +155,24 @@ class CurrentBrightnessSensor(StaircaseBaseSensor):
     @property
     def native_value(self) -> int:
         return self._coordinator.current_brightness
+
+
+class DirectionSensor(StaircaseBaseSensor):
+    """sensor.<name>_direction — transit direction: up, down, none.
+
+    up = bottom sensor first, then top (going upstairs).
+    down = top sensor first, then bottom (going downstairs).
+    none = no transit detected or idle.
+    """
+
+    _attr_name = "Direction"
+    _attr_translation_key = "staircase_direction"
+    _attr_icon = "mdi:swap-vertical"
+
+    def __init__(self, coordinator, entry, name) -> None:
+        super().__init__(coordinator, entry, name)
+        self._attr_unique_id = f"{entry.entry_id}_direction"
+
+    @property
+    def native_value(self) -> str:
+        return self._coordinator.direction

@@ -148,6 +148,14 @@
       },
       "current_brightness": {
         "name": "Current brightness"
+      },
+      "staircase_direction": {
+        "name": "Direction",
+        "state": {
+          "none": "None",
+          "up": "Up",
+          "down": "Down"
+        }
       }
     },
     "number": {

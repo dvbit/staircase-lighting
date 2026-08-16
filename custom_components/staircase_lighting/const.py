@@ -52,5 +52,10 @@ STATE_WARNING = "warning"
 MODE_NORMAL = "normal"
 MODE_DIM = "dim"
 
+# --- Direction values ---
+DIR_NONE = "none"
+DIR_UP = "up"
+DIR_DOWN = "down"
+
 # --- Platforms ---
 PLATFORMS = ["binary_sensor", "button", "sensor", "number", "switch"]

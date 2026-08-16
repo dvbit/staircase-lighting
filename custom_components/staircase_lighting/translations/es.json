@@ -90,6 +90,14 @@
       },
       "current_brightness": {
         "name": "Brillo actual"
+      },
+      "staircase_direction": {
+        "name": "Dirección",
+        "state": {
+          "none": "Ninguna",
+          "up": "Subida",
+          "down": "Bajada"
+        }
       }
     },
     "number": {

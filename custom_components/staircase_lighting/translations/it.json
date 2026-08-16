@@ -90,6 +90,14 @@
       },
       "current_brightness": {
         "name": "Luminosità attuale"
+      },
+      "staircase_direction": {
+        "name": "Direzione",
+        "state": {
+          "none": "Nessuna",
+          "up": "Salita",
+          "down": "Discesa"
+        }
       }
     },
     "number": {

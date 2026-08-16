@@ -50,6 +50,9 @@ from .const import (
     STATE_IDLE,
     STATE_ACTIVE,
     STATE_WARNING,
+    DIR_NONE,
+    DIR_UP,
+    DIR_DOWN,
     MODE_NORMAL,
     MODE_DIM,
 )
@@ -125,6 +128,10 @@ class StaircaseLightingCoordinator:
         # --- Manual on flag (set by lights switch, cleared on timer expiry) ---
         self._manual_on: bool = False
 
+        # --- Transit direction tracking ---
+        self._direction: str = DIR_NONE
+        self._first_zone: str | None = None  # first sensor that triggered
+
         # --- Mirrored sensor states (real-time via state change listeners) ---
         self._motion_bottom: bool = False
         self._motion_top: bool = False
@@ -172,6 +179,11 @@ class StaircaseLightingCoordinator:
         remaining_bottom = max(0, self._expiry_bottom - now) if self._expiry_bottom else 0
         remaining_top = max(0, self._expiry_top - now) if self._expiry_top else 0
         return int(max(remaining_bottom, remaining_top))
+
+    @property
+    def direction(self) -> str:
+        """Transit direction: up (bottom→top), down (top→bottom), none."""
+        return self._direction
 
     @property
     def current_brightness(self) -> int:
@@ -450,6 +462,15 @@ class StaircaseLightingCoordinator:
         current_mode = self._determine_mode()
         if self._state in (STATE_IDLE, STATE_WARNING):
             self._mode = current_mode
+            # First sensor of a new transit cycle — record it
+            self._first_zone = zone
+            self._direction = DIR_NONE
+        elif self._state == STATE_ACTIVE and self._first_zone and self._first_zone != zone:
+            # Second different sensor → determine direction
+            if self._first_zone == "bottom" and zone == "top":
+                self._direction = DIR_UP
+            elif self._first_zone == "top" and zone == "bottom":
+                self._direction = DIR_DOWN
 
         brightness_pct = (
             self.brightness_dim if self._mode == MODE_DIM else self.brightness
@@ -663,6 +684,8 @@ class StaircaseLightingCoordinator:
         self._mode = MODE_NORMAL
         self._current_brightness_pct = 0
         self._manual_on = False
+        self._direction = DIR_NONE
+        self._first_zone = None
         self.hass.async_create_task(self._async_turn_off_lights())
         self._async_notify_update()
         _LOGGER.debug("Warning expired, lights off, state=idle")
@@ -744,5 +767,7 @@ class StaircaseLightingCoordinator:
         self._mode = MODE_NORMAL
         self._manual_on = False
         self._current_brightness_pct = 0
+        self._direction = DIR_NONE
+        self._first_zone = None
         self._async_notify_update()
         _LOGGER.debug("Manual OFF: timers cancelled, state=idle")

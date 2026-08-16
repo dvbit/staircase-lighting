@@ -90,6 +90,14 @@
       },
       "current_brightness": {
         "name": "Aktuelle Helligkeit"
+      },
+      "staircase_direction": {
+        "name": "Richtung",
+        "state": {
+          "none": "Keine",
+          "up": "Aufwärts",
+          "down": "Abwärts"
+        }
       }
     },
     "number": {
