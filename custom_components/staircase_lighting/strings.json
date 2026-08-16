@@ -27,7 +27,9 @@
           "brightness": "Normal brightness",
           "brightness_dim": "Dim brightness",
           "lux_threshold": "Lux threshold",
-          "lux_control_enabled": "Enable lux-based control"
+          "lux_control_enabled": "Enable lux-based control",
+          "warning_dim_pct": "Warning dim brightness",
+          "warning_dim_duration": "Warning dim duration"
         }
       },
       "dim_mode": {
@@ -75,7 +77,9 @@
           "brightness": "Normal brightness",
           "brightness_dim": "Dim brightness",
           "lux_threshold": "Lux threshold",
-          "lux_control_enabled": "Enable lux-based control"
+          "lux_control_enabled": "Enable lux-based control",
+          "warning_dim_pct": "Warning dim brightness",
+          "warning_dim_duration": "Warning dim duration"
         }
       },
       "dim_mode": {
@@ -125,7 +129,8 @@
         "name": "State",
         "state": {
           "idle": "Idle",
-          "active": "Active"
+          "active": "Active",
+          "warning": "Warning"
         }
       },
       "staircase_mode": {
@@ -157,6 +162,12 @@
       },
       "lux_threshold": {
         "name": "Lux threshold"
+      },
+      "warning_dim_brightness": {
+        "name": "Warning dim brightness"
+      },
+      "warning_dim_duration": {
+        "name": "Warning dim duration"
       }
     },
     "switch": {

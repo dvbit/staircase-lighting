@@ -27,7 +27,9 @@
           "brightness": "Normale Helligkeit",
           "brightness_dim": "Reduzierte Helligkeit",
           "lux_threshold": "Lux-Schwellenwert",
-          "lux_control_enabled": "Lux-basierte Steuerung aktivieren"
+          "lux_control_enabled": "Lux-basierte Steuerung aktivieren",
+          "warning_dim_pct": "Warnhelligkeit vor Abschaltung",
+          "warning_dim_duration": "Warndauer vor Abschaltung"
         }
       },
       "dim_mode": {
@@ -69,7 +71,8 @@
         "name": "Status",
         "state": {
           "idle": "Inaktiv",
-          "active": "Aktiv"
+          "active": "Aktiv",
+          "warning": "Warnung"
         }
       },
       "staircase_mode": {
@@ -101,6 +104,12 @@
       },
       "lux_threshold": {
         "name": "Lux-Schwellenwert"
+      },
+      "warning_dim_brightness": {
+        "name": "Warnhelligkeit"
+      },
+      "warning_dim_duration": {
+        "name": "Warndauer"
       }
     },
     "switch": {
@@ -146,7 +155,9 @@
           "brightness": "Normale Helligkeit",
           "brightness_dim": "Reduzierte Helligkeit",
           "lux_threshold": "Lux-Schwellenwert",
-          "lux_control_enabled": "Lux-basierte Steuerung aktivieren"
+          "lux_control_enabled": "Lux-basierte Steuerung aktivieren",
+          "warning_dim_pct": "Warnhelligkeit vor Abschaltung",
+          "warning_dim_duration": "Warndauer vor Abschaltung"
         }
       },
       "dim_mode": {

@@ -25,6 +25,8 @@ from .const import (
     CONF_BRIGHTNESS_DIM,
     CONF_LUX_THRESHOLD,
     CONF_LUX_CONTROL_ENABLED,
+    CONF_WARNING_DIM_PCT,
+    CONF_WARNING_DIM_DURATION,
     CONF_DIM_MODE,
     CONF_DIM_START,
     CONF_DIM_END,
@@ -37,6 +39,8 @@ from .const import (
     DEFAULT_BRIGHTNESS_DIM,
     DEFAULT_LUX_THRESHOLD,
     DEFAULT_LUX_CONTROL_ENABLED,
+    DEFAULT_WARNING_DIM_PCT,
+    DEFAULT_WARNING_DIM_DURATION,
 )
 
 
@@ -139,6 +143,24 @@ def _parameters_schema(defaults: dict | None = None) -> vol.Schema:
                 CONF_LUX_CONTROL_ENABLED,
                 default=d.get(CONF_LUX_CONTROL_ENABLED, DEFAULT_LUX_CONTROL_ENABLED),
             ): selector.BooleanSelector(),
+            vol.Required(
+                CONF_WARNING_DIM_PCT,
+                default=d.get(CONF_WARNING_DIM_PCT, DEFAULT_WARNING_DIM_PCT),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=1, max=100, step=1, mode="slider",
+                    unit_of_measurement="%",
+                )
+            ),
+            vol.Required(
+                CONF_WARNING_DIM_DURATION,
+                default=d.get(CONF_WARNING_DIM_DURATION, DEFAULT_WARNING_DIM_DURATION),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=1, max=60, step=1, mode="slider",
+                    unit_of_measurement="s",
+                )
+            ),
         }
     )
 
@@ -274,6 +296,8 @@ class StaircaseLightingConfigFlow(
             user_input[CONF_BRIGHTNESS] = int(user_input[CONF_BRIGHTNESS])
             user_input[CONF_BRIGHTNESS_DIM] = int(user_input[CONF_BRIGHTNESS_DIM])
             user_input[CONF_LUX_THRESHOLD] = int(user_input[CONF_LUX_THRESHOLD])
+            user_input[CONF_WARNING_DIM_PCT] = int(user_input[CONF_WARNING_DIM_PCT])
+            user_input[CONF_WARNING_DIM_DURATION] = int(user_input[CONF_WARNING_DIM_DURATION])
             self._data.update(user_input)
             return await self.async_step_dim_mode()
 
@@ -377,6 +401,8 @@ class StaircaseLightingOptionsFlow(config_entries.OptionsFlow):
             user_input[CONF_BRIGHTNESS] = int(user_input[CONF_BRIGHTNESS])
             user_input[CONF_BRIGHTNESS_DIM] = int(user_input[CONF_BRIGHTNESS_DIM])
             user_input[CONF_LUX_THRESHOLD] = int(user_input[CONF_LUX_THRESHOLD])
+            user_input[CONF_WARNING_DIM_PCT] = int(user_input[CONF_WARNING_DIM_PCT])
+            user_input[CONF_WARNING_DIM_DURATION] = int(user_input[CONF_WARNING_DIM_DURATION])
             self._data.update(user_input)
             return await self.async_step_dim_mode()
 

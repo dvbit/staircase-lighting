@@ -27,7 +27,9 @@
           "brightness": "Brillo normal",
           "brightness_dim": "Brillo reducido",
           "lux_threshold": "Umbral lux",
-          "lux_control_enabled": "Activar control basado en lux"
+          "lux_control_enabled": "Activar control basado en lux",
+          "warning_dim_pct": "Brillo aviso pre-apagado",
+          "warning_dim_duration": "Duración aviso pre-apagado"
         }
       },
       "dim_mode": {
@@ -69,7 +71,8 @@
         "name": "Estado",
         "state": {
           "idle": "Inactivo",
-          "active": "Activo"
+          "active": "Activo",
+          "warning": "Aviso"
         }
       },
       "staircase_mode": {
@@ -101,6 +104,12 @@
       },
       "lux_threshold": {
         "name": "Umbral lux"
+      },
+      "warning_dim_brightness": {
+        "name": "Brillo aviso"
+      },
+      "warning_dim_duration": {
+        "name": "Duración aviso"
       }
     },
     "switch": {
@@ -146,7 +155,9 @@
           "brightness": "Brillo normal",
           "brightness_dim": "Brillo reducido",
           "lux_threshold": "Umbral lux",
-          "lux_control_enabled": "Activar control basado en lux"
+          "lux_control_enabled": "Activar control basado en lux",
+          "warning_dim_pct": "Brillo aviso pre-apagado",
+          "warning_dim_duration": "Duración aviso pre-apagado"
         }
       },
       "dim_mode": {

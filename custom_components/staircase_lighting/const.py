@@ -22,6 +22,8 @@ CONF_BRIGHTNESS = "brightness"
 CONF_BRIGHTNESS_DIM = "brightness_dim"
 CONF_LUX_THRESHOLD = "lux_threshold"
 CONF_LUX_CONTROL_ENABLED = "lux_control_enabled"
+CONF_WARNING_DIM_PCT = "warning_dim_pct"
+CONF_WARNING_DIM_DURATION = "warning_dim_duration"
 
 # Step 4: Dim mode
 CONF_DIM_MODE = "dim_mode"
@@ -40,10 +42,13 @@ DEFAULT_BRIGHTNESS = 100
 DEFAULT_BRIGHTNESS_DIM = 20
 DEFAULT_LUX_THRESHOLD = 50
 DEFAULT_LUX_CONTROL_ENABLED = True
+DEFAULT_WARNING_DIM_PCT = 30
+DEFAULT_WARNING_DIM_DURATION = 10
 
 # --- State values (spec ref: sensor state/mode values) ---
 STATE_IDLE = "idle"
 STATE_ACTIVE = "active"
+STATE_WARNING = "warning"
 MODE_NORMAL = "normal"
 MODE_DIM = "dim"
 

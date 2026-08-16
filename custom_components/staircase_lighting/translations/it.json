@@ -27,7 +27,9 @@
           "brightness": "Luminosità normale",
           "brightness_dim": "Luminosità ridotta",
           "lux_threshold": "Soglia lux",
-          "lux_control_enabled": "Abilita controllo basato su lux"
+          "lux_control_enabled": "Abilita controllo basato su lux",
+          "warning_dim_pct": "Luminosità avviso pre-spegnimento",
+          "warning_dim_duration": "Durata avviso pre-spegnimento"
         }
       },
       "dim_mode": {
@@ -69,7 +71,8 @@
         "name": "Stato",
         "state": {
           "idle": "Inattivo",
-          "active": "Attivo"
+          "active": "Attivo",
+          "warning": "Avviso"
         }
       },
       "staircase_mode": {
@@ -101,6 +104,12 @@
       },
       "lux_threshold": {
         "name": "Soglia lux"
+      },
+      "warning_dim_brightness": {
+        "name": "Luminosità avviso"
+      },
+      "warning_dim_duration": {
+        "name": "Durata avviso"
       }
     },
     "switch": {
@@ -146,7 +155,9 @@
           "brightness": "Luminosità normale",
           "brightness_dim": "Luminosità ridotta",
           "lux_threshold": "Soglia lux",
-          "lux_control_enabled": "Abilita controllo basato su lux"
+          "lux_control_enabled": "Abilita controllo basato su lux",
+          "warning_dim_pct": "Luminosità avviso pre-spegnimento",
+          "warning_dim_duration": "Durata avviso pre-spegnimento"
         }
       },
       "dim_mode": {

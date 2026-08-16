@@ -27,7 +27,9 @@
           "brightness": "Luminosité normale",
           "brightness_dim": "Luminosité réduite",
           "lux_threshold": "Seuil lux",
-          "lux_control_enabled": "Activer le contrôle basé sur les lux"
+          "lux_control_enabled": "Activer le contrôle basé sur les lux",
+          "warning_dim_pct": "Luminosité avertissement pré-extinction",
+          "warning_dim_duration": "Durée avertissement pré-extinction"
         }
       },
       "dim_mode": {
@@ -69,7 +71,8 @@
         "name": "État",
         "state": {
           "idle": "Inactif",
-          "active": "Actif"
+          "active": "Actif",
+          "warning": "Avertissement"
         }
       },
       "staircase_mode": {
@@ -101,6 +104,12 @@
       },
       "lux_threshold": {
         "name": "Seuil lux"
+      },
+      "warning_dim_brightness": {
+        "name": "Luminosité avertissement"
+      },
+      "warning_dim_duration": {
+        "name": "Durée avertissement"
       }
     },
     "switch": {
@@ -146,7 +155,9 @@
           "brightness": "Luminosité normale",
           "brightness_dim": "Luminosité réduite",
           "lux_threshold": "Seuil lux",
-          "lux_control_enabled": "Activer le contrôle basé sur les lux"
+          "lux_control_enabled": "Activer le contrôle basé sur les lux",
+          "warning_dim_pct": "Luminosité avertissement pré-extinction",
+          "warning_dim_duration": "Durée avertissement pré-extinction"
         }
       },
       "dim_mode": {

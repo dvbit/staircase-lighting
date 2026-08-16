@@ -43,8 +43,13 @@ from .const import (
     DEFAULT_BRIGHTNESS_DIM,
     DEFAULT_LUX_THRESHOLD,
     DEFAULT_LUX_CONTROL_ENABLED,
+    CONF_WARNING_DIM_PCT,
+    CONF_WARNING_DIM_DURATION,
+    DEFAULT_WARNING_DIM_PCT,
+    DEFAULT_WARNING_DIM_DURATION,
     STATE_IDLE,
     STATE_ACTIVE,
+    STATE_WARNING,
     MODE_NORMAL,
     MODE_DIM,
 )
@@ -85,6 +90,12 @@ class StaircaseLightingCoordinator:
         self.lux_control_enabled: bool = entry_data.get(
             CONF_LUX_CONTROL_ENABLED, DEFAULT_LUX_CONTROL_ENABLED
         )
+        self.warning_dim_pct: int = entry_data.get(
+            CONF_WARNING_DIM_PCT, DEFAULT_WARNING_DIM_PCT
+        )
+        self.warning_dim_duration: int = entry_data.get(
+            CONF_WARNING_DIM_DURATION, DEFAULT_WARNING_DIM_DURATION
+        )
 
         # --- Dim mode config (spec ref: Step 4 dim mode) ---
         self.dim_mode: str = entry_data.get(CONF_DIM_MODE, DIM_MODE_NONE)
@@ -97,6 +108,7 @@ class StaircaseLightingCoordinator:
         self._mode: str = MODE_NORMAL
         self._timer_bottom: CALLBACK_TYPE | None = None
         self._timer_top: CALLBACK_TYPE | None = None
+        self._timer_warning: CALLBACK_TYPE | None = None
         self._listeners: list[CALLBACK_TYPE] = []
         self._update_callbacks: list[callback] = []
 
@@ -289,6 +301,9 @@ class StaircaseLightingCoordinator:
         if self._timer_top is not None:
             self._timer_top()
             self._timer_top = None
+        if self._timer_warning is not None:
+            self._timer_warning()
+            self._timer_warning = None
 
         self._expiry_bottom = None
         self._expiry_top = None
@@ -417,16 +432,23 @@ class StaircaseLightingCoordinator:
 
         Spec ref: Attivazione sensore — check lux, determine mode,
         turn on lights, start/restart zone timer.
+        If in warning state, cancel warning and restore full brightness.
         """
         # --- Lux gating (spec ref: Condizione di accensione) ---
         if not self._check_lux_condition():
             _LOGGER.debug("Lux condition not met, ignoring %s activation", zone)
             return
 
+        # --- Cancel warning dim if active ---
+        if self._timer_warning is not None:
+            self._timer_warning()
+            self._timer_warning = None
+            _LOGGER.debug("Warning cancelled by %s sensor activation", zone)
+
         # --- Determine dim mode (spec ref: Determinazione modalità luminosità) ---
         # Mode is fixed at activation time for the cycle.
         current_mode = self._determine_mode()
-        if self._state == STATE_IDLE:
+        if self._state in (STATE_IDLE, STATE_WARNING):
             self._mode = current_mode
 
         brightness_pct = (
@@ -605,19 +627,45 @@ class StaircaseLightingCoordinator:
 
     @callback
     def _async_check_all_timers_expired(self) -> None:
-        """Check if both zone timers have expired; if so, turn off lights.
+        """Check if both zone timers have expired; if so, enter warning dim.
 
-        Spec ref: if both timers expired → turn off lights, set idle.
+        Both timers expired → dim to warning_dim_pct → after warning_dim_duration → off.
         If one still active → no action, state remains active.
         """
         if self._timer_bottom is None and self._timer_top is None:
-            self._state = STATE_IDLE
-            self._mode = MODE_NORMAL
-            self._current_brightness_pct = 0
-            self._manual_on = False
-            self.hass.async_create_task(self._async_turn_off_lights())
+            # Enter warning dim phase
+            self._state = STATE_WARNING
+            brightness_pct = self.warning_dim_pct
+            self.hass.async_create_task(
+                self._async_turn_on_lights(brightness_pct)
+            )
+            # Start warning timer
+            self._timer_warning = evt.async_call_later(
+                self.hass,
+                self.warning_dim_duration,
+                self._async_warning_expired,
+            )
             self._async_notify_update()
-            _LOGGER.debug("Both timers expired, lights off, state=idle")
+            _LOGGER.debug(
+                "Both timers expired, warning dim at %d%% for %ds",
+                brightness_pct,
+                self.warning_dim_duration,
+            )
+
+    @callback
+    def _async_warning_expired(self, _now: Any) -> None:
+        """Warning dim timer expired — turn off lights.
+
+        Final step: warning phase over → lights off → idle.
+        """
+        self._timer_warning = None
+        self._state = STATE_IDLE
+        self._mode = MODE_NORMAL
+        self._current_brightness_pct = 0
+        self._manual_on = False
+        self.hass.async_create_task(self._async_turn_off_lights())
+        self._async_notify_update()
+        _LOGGER.debug("Warning expired, lights off, state=idle")
     # ------------------------------------------------------------------
     # Button action: set lux threshold to current lux value
     # ------------------------------------------------------------------
@@ -687,6 +735,9 @@ class StaircaseLightingCoordinator:
             self._timer_top()
             self._timer_top = None
             self._expiry_top = None
+        if self._timer_warning is not None:
+            self._timer_warning()
+            self._timer_warning = None
 
         await self._async_turn_off_lights()
         self._state = STATE_IDLE

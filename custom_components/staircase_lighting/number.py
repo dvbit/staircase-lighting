@@ -20,6 +20,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         BrightnessNumber(coordinator, entry, name),
         BrightnessDimNumber(coordinator, entry, name),
         LuxThresholdNumber(coordinator, entry, name),
+        WarningDimBrightnessNumber(coordinator, entry, name),
+        WarningDimDurationNumber(coordinator, entry, name),
     ])
 
 
@@ -132,4 +134,47 @@ class LuxThresholdNumber(StaircaseBaseNumber):
 
     async def async_set_native_value(self, value):
         self._coordinator.lux_threshold = int(value)
+        self.async_write_ha_state()
+
+class WarningDimBrightnessNumber(StaircaseBaseNumber):
+    """number.<name>_warning_dim_brightness — % during pre-off warning."""
+    _attr_name = "Warning dim brightness"
+    _attr_icon = "mdi:brightness-4"
+    _attr_native_min_value = 1
+    _attr_native_max_value = 100
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = "%"
+
+    def __init__(self, coordinator, entry, name):
+        super().__init__(coordinator, entry, name)
+        self._attr_unique_id = f"{entry.entry_id}_warning_dim_brightness"
+
+    @property
+    def native_value(self):
+        return self._coordinator.warning_dim_pct
+
+    async def async_set_native_value(self, value):
+        self._coordinator.warning_dim_pct = int(value)
+        self.async_write_ha_state()
+
+
+class WarningDimDurationNumber(StaircaseBaseNumber):
+    """number.<name>_warning_dim_duration — seconds of pre-off dim."""
+    _attr_name = "Warning dim duration"
+    _attr_icon = "mdi:timer-alert-outline"
+    _attr_native_min_value = 1
+    _attr_native_max_value = 60
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = "s"
+
+    def __init__(self, coordinator, entry, name):
+        super().__init__(coordinator, entry, name)
+        self._attr_unique_id = f"{entry.entry_id}_warning_dim_duration"
+
+    @property
+    def native_value(self):
+        return self._coordinator.warning_dim_duration
+
+    async def async_set_native_value(self, value):
+        self._coordinator.warning_dim_duration = int(value)
         self.async_write_ha_state()
