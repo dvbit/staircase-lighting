@@ -7,7 +7,7 @@
   "integration_type": "device",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/dvbit/staircase_lighting/issues",
-  "version": "1.0.0",
+  "version": "5.0.0",
   "requirements": [],
   "dependencies": []
 }
