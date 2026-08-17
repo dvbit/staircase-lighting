@@ -75,8 +75,9 @@ Per ogni scala configurata (esempio: "Scala Ingresso"):
 |---|---|---|
 | `binary_sensor.scala_ingresso_motion_bottom` | binary_sensor | Stato sensore movimento basso in tempo reale |
 | `binary_sensor.scala_ingresso_motion_top` | binary_sensor | Stato sensore movimento alto in tempo reale |
-| `sensor.scala_ingresso_state` | sensor | `idle` o `active` |
+| `sensor.scala_ingresso_state` | sensor | `idle`, `active` o `warning` |
 | `sensor.scala_ingresso_mode` | sensor | `normal` o `dim` |
+| `sensor.scala_ingresso_direction` | sensor | Direzione transito: `up`, `down` o `none` |
 | `sensor.scala_ingresso_time_remaining` | sensor | Secondi rimanenti allo spegnimento (0 quando inattivo) |
 | `sensor.scala_ingresso_current_brightness` | sensor | Luminosità attuale % dall'entità luce |
 | `sensor.scala_ingresso_ambient_lux` | sensor | Lux ambientale in tempo reale (solo se sensore lux configurato) |
@@ -84,6 +85,8 @@ Per ogni scala configurata (esempio: "Scala Ingresso"):
 | `number.scala_ingresso_brightness` | number | Luminosità normale runtime |
 | `number.scala_ingresso_brightness_dim` | number | Luminosità ridotta runtime |
 | `number.scala_ingresso_lux_threshold` | number | Soglia lux runtime |
+| `number.scala_ingresso_warning_dim_brightness` | number | Luminosità durante l'avviso pre-spegnimento (default 30%) |
+| `number.scala_ingresso_warning_dim_duration` | number | Durata avviso prima dello spegnimento, in secondi (default 10s) |
 | `switch.scala_ingresso_lux_control` | switch | Abilita/disabilita controllo lux |
 | `switch.scala_ingresso_lights` | switch | Accensione/spegnimento manuale di entrambe le luci |
 | `button.scala_ingresso_set_lux_threshold` | button | Imposta soglia lux al valore ambientale attuale |
@@ -106,16 +109,27 @@ Imposta la modalità ridotta su "Fascia oraria", inizio 23:00, fine 07:00. Di no
 
 Crea un helper `input_boolean.modalita_notte`. Imposta la modalità ridotta su "Entità esterna" e selezionalo. Attiva il boolean da un'automazione o manualmente. Quando è ON, la scala usa la luminosità ridotta.
 
+### Esempio 5 — Avviso pre-spegnimento
+
+Prima di spegnersi completamente, le luci si attenuano a una luminosità ridotta per qualche secondo come avviso — dandoti il tempo di riattivare un sensore se sei ancora sulle scale. Regola `number.scala_ingresso_warning_dim_brightness` (default 30%) e `number.scala_ingresso_warning_dim_duration` (default 10s) dalla dashboard. Se un sensore di movimento si attiva durante l'avviso, viene annullato e la luminosità piena viene ripristinata.
+
+### Esempio 6 — Rilevare la direzione del transito
+
+`sensor.scala_ingresso_direction` riporta `up` quando il sensore basso si attiva per primo e quello alto conferma (salita), o `down` per il contrario. Usalo in un'automazione, ad esempio per annunciare "sto salendo" su uno speaker smart, o per attivare illuminazione diversa sui piani collegati.
+
 ## Logica operativa
 
 1. **Movimento rilevato** su uno dei sensori di zona
 2. **Controllo lux**: se abilitato e il sensore legge sopra la soglia → evento ignorato
 3. **Determinazione modalità**: verifica condizione dim (fascia oraria o entità) → imposta `normal` o `dim`
 4. **Accensione** entrambe le luci alla luminosità determinata (forza la luminosità anche se già accese)
-5. **Avvio/riavvio** del timer della zona attivata
-6. **Scadenza timer**: alla scadenza, verifica se anche l'altro è scaduto
-   - Entrambi scaduti → spegnimento luci, stato = `idle`
+5. **Rilevamento direzione**: il primo sensore attivato viene registrato; quando il secondo sensore (diverso) si attiva, la direzione è impostata a `up` (basso→alto) o `down` (alto→basso)
+6. **Avvio/riavvio** del timer della zona attivata
+7. **Scadenza timer**: alla scadenza, verifica se anche l'altro è scaduto
+   - Entrambi scaduti → entra in stato **warning**: attenua a `warning_dim_brightness` per `warning_dim_duration` secondi
    - Uno ancora attivo → nessuna azione, stato rimane `active`
+8. **Scadenza warning**: se nessun sensore si attiva durante la finestra di avviso → le luci si spengono, stato = `idle`, direzione torna a `none`
+9. **Annullamento warning**: se un sensore si attiva durante l'avviso → l'avviso viene annullato, luminosità piena ripristinata, timer riavviati
 
 La modalità viene fissata all'accensione e non cambia durante il ciclo.
 
@@ -171,6 +185,9 @@ Questa integrazione è stata costruita dal seguente requisito consolidato:
 - Sensore countdown tempo rimanente (aggiornamento ogni 1s)
 - Sensore luminosità attuale (legge attributo brightness reale dall'entità light)
 - Pulsante per impostare la soglia lux al valore ambientale corrente
+- Avviso pre-spegnimento: attenua a luminosità parametrizzabile per durata parametrizzabile prima di spegnere; annullato se un sensore si attiva durante la finestra di avviso
+- Sensore direzione transito: rileva salita/discesa in base a quale sensore di movimento si attiva per primo
+- Switch luci manuale: on/off alla luminosità della modalità corrente, indipendente dai timer di movimento
 - Options flow replica step 2-4 del config flow, senza riavvio
 - Isolamento completo delle istanze
 - Compatibilità minima: Home Assistant 2024.1

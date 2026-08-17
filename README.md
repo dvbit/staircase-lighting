@@ -75,8 +75,9 @@ For each configured staircase (example name: "Hall Stairs"):
 |---|---|---|
 | `binary_sensor.hall_stairs_motion_bottom` | binary_sensor | Real-time bottom motion sensor state |
 | `binary_sensor.hall_stairs_motion_top` | binary_sensor | Real-time top motion sensor state |
-| `sensor.hall_stairs_state` | sensor | `idle` or `active` |
+| `sensor.hall_stairs_state` | sensor | `idle`, `active`, or `warning` |
 | `sensor.hall_stairs_mode` | sensor | `normal` or `dim` |
+| `sensor.hall_stairs_direction` | sensor | Transit direction: `up`, `down`, or `none` |
 | `sensor.hall_stairs_time_remaining` | sensor | Seconds until lights turn off (0 when idle) |
 | `sensor.hall_stairs_current_brightness` | sensor | Current brightness % from the light entity |
 | `sensor.hall_stairs_ambient_lux` | sensor | Real-time ambient lux (only if lux sensor configured) |
@@ -84,6 +85,8 @@ For each configured staircase (example name: "Hall Stairs"):
 | `number.hall_stairs_brightness` | number | Runtime normal brightness |
 | `number.hall_stairs_brightness_dim` | number | Runtime dim brightness |
 | `number.hall_stairs_lux_threshold` | number | Runtime lux threshold |
+| `number.hall_stairs_warning_dim_brightness` | number | Brightness during pre-off warning (default 30%) |
+| `number.hall_stairs_warning_dim_duration` | number | Warning duration before off, in seconds (default 10s) |
 | `switch.hall_stairs_lux_control` | switch | Enable/disable lux gating |
 | `switch.hall_stairs_lights` | switch | Manual on/off for both lights |
 | `button.hall_stairs_set_lux_threshold` | button | Set lux threshold to current ambient value |
@@ -106,16 +109,27 @@ Set dim mode to "Time range", start 23:00, end 07:00. During nighttime, lights t
 
 Create an `input_boolean.night_mode` helper. Set dim mode to "External entity" and select it. Toggle the boolean from an automation or manually. When ON, the staircase uses dim brightness.
 
+### Example 5 — Warning dim before off
+
+Before lights turn off completely, they dim to a lower brightness for a few seconds as a warning — giving you time to trigger a sensor again if still on the stairs. Adjust `number.hall_stairs_warning_dim_brightness` (default 30%) and `number.hall_stairs_warning_dim_duration` (default 10s) from the dashboard. If a motion sensor triggers during the warning phase, it's cancelled and full brightness is restored.
+
+### Example 6 — Detecting transit direction
+
+`sensor.hall_stairs_direction` reports `up` when the bottom sensor triggers first and the top sensor confirms (going upstairs), or `down` for the reverse. Use this in an automation, e.g. to announce "going upstairs" on a smart speaker, or to trigger different lighting on connected floors.
+
 ## Operational Logic
 
 1. **Motion detected** on either zone sensor
 2. **Lux check**: if lux control is enabled and sensor reads above threshold → event ignored
 3. **Mode determination**: check dim condition (time range or entity) → set `normal` or `dim`
 4. **Turn on** both lights at the determined brightness (forces brightness even if already on)
-5. **Start/restart** the zone timer for the triggered zone
-6. **Timer expiry**: when a zone timer expires, check if the other is also expired
-   - Both expired → turn off all lights, state = `idle`
+5. **Direction tracking**: the first sensor to trigger is recorded; when the second (different) sensor triggers, direction is set to `up` (bottom→top) or `down` (top→bottom)
+6. **Start/restart** the zone timer for the triggered zone
+7. **Timer expiry**: when a zone timer expires, check if the other is also expired
+   - Both expired → enter **warning** state: dim to `warning_dim_brightness` for `warning_dim_duration` seconds
    - One still active → no action, state remains `active`
+8. **Warning expiry**: if no sensor triggers during the warning window → lights turn off, state = `idle`, direction resets to `none`
+9. **Warning cancellation**: if a sensor triggers during warning → warning is cancelled, full brightness restored, timers restart
 
 Mode is locked at activation and does not change mid-cycle.
 
@@ -171,6 +185,9 @@ This integration was built from the following consolidated requirement:
 - Time remaining countdown sensor (1s update interval)
 - Current brightness sensor (reads real brightness attribute from light entity)
 - Button to set lux threshold to current ambient lux value
+- Warning dim before off: dims to a parametrizable brightness for a parametrizable duration before turning off; cancelled if a sensor triggers during the warning window
+- Transit direction sensor: detects up/down based on which motion sensor triggers first
+- Manual lights switch: on/off at current mode brightness, independent of motion timers
 - Options flow mirrors config flow steps 2-4, no restart required
 - Full instance isolation
 - Minimum compatibility: Home Assistant 2024.1
